@@ -1,0 +1,211 @@
+/*
+ * safe-edges.css: Tailwind v4 utilities for safe-edges.js
+ *
+ *   @import "tailwindcss";
+ *   @import "./safe-edges.css";
+ *
+ * Load safe-edges.js in <head>. Without it every utility falls back to the
+ * plain env(safe-area-inset-*) value, so pages work unchanged elsewhere.
+ *
+ * Horizontal safe areas (env() plus Safari's control strip):
+ *   px-safe pl-safe pr-safe         padding of exactly the safe area
+ *   px-safe-4 pl-safe-4 pr-safe-4   safe area plus spacing (any integer)
+ *   mx-safe ml-safe mr-safe         margins
+ *   left-safe right-safe inset-x-safe (and -N): positioned offsets
+ *   top-safe bottom-safe (and -N): vertical offsets from env()
+ *   bleed-safe bleed-safe-4         negative margins that undo px-safe(-N), for
+ *                                   edge-to-edge children of a padded parent
+ * Vertical safe areas (plain env(), for symmetry):
+ *   pt-safe pb-safe py-safe p-safe and -N forms
+ * Safari's bottom toolbar (outer display; --toolbar-bottom from safe-edges.js):
+ *   under-toolbar                   bottom edge extended under the toolbar, for
+ *                                   app-shell scrollers and bars whose
+ *                                   background should run behind it
+ *   pb-toolbar pb-toolbar-N         padding that keeps the end of a scroller
+ *                                   or a bar's controls above the toolbar
+ * Width:
+ *   w-true min-w-true max-w-true    the full window width; 100vw and media
+ *                                   queries still see the layout width, so
+ *                                   size from containers (@container) instead
+ * The strip itself:
+ *   strip-rail                      absolute box over the strip's empty slot,
+ *                                   a column for page controls spaced like
+ *                                   Safari's (12px padding and gaps, aligned to
+ *                                   its button column), stacked from the bottom;
+ *                                   display: none when there's no strip or no
+ *                                   known slot
+ *   strip-button                    a 48px circle in Safari's glass style.
+ *                                   Use at most 2: a Live Activity pushes
+ *                                   Safari's upper buttons down by 90pt and no
+ *                                   page can detect it (SafeEdges.state.slot.
+ *                                   buttons has the cap per layout)
+ *   strip-cover                     absolute box over the whole strip
+ *   follow-scroll                   keeps an absolute box in place on screen
+ *                                   while the page scrolls, on the root scroll
+ *                                   timeline (fixed and sticky aren't drawn in
+ *                                   the strip or the bottom toolbar). Position
+ *                                   it in window coordinates.
+ * Variants:
+ *   strip:  strip-right:  strip-left:  strip-slot:  no-strip:
+ *
+ * Safari clips fixed and sticky boxes at the layout width, so they never reach
+ * the strip and don't need --safe-right. strip-rail and strip-cover are
+ * absolute and follow the scroll (see follow-scroll), so they stay on screen
+ * in scrolling pages and app shells alike. Taps on strip-button, and on any
+ * element with data-strip-tap, reach their click handlers through
+ * safe-edges.js; Safari doesn't deliver them on its own.
+ */
+
+@custom-variant strip (&:where([data-safe-edges], [data-safe-edges] *));
+@custom-variant strip-right (&:where([data-safe-edges="right"], [data-safe-edges="right"] *));
+@custom-variant strip-left (&:where([data-safe-edges="left"], [data-safe-edges="left"] *));
+@custom-variant strip-slot (&:where([data-strip-slot], [data-strip-slot] *));
+@custom-variant no-strip (&:where(:root:not([data-safe-edges]), :root:not([data-safe-edges]) *));
+
+@utility w-true { width: var(--true-width, 100vw); }
+@utility min-w-true { min-width: var(--true-width, 100vw); }
+@utility max-w-true { max-width: var(--true-width, 100vw); }
+
+/* Horizontal padding */
+@utility px-safe {
+  padding-left: var(--safe-left, env(safe-area-inset-left, 0px));
+  padding-right: var(--safe-right, env(safe-area-inset-right, 0px));
+}
+@utility pl-safe { padding-left: var(--safe-left, env(safe-area-inset-left, 0px)); }
+@utility pr-safe { padding-right: var(--safe-right, env(safe-area-inset-right, 0px)); }
+@utility px-safe-* {
+  padding-left: calc(var(--safe-left, env(safe-area-inset-left, 0px)) + var(--spacing) * --value(integer));
+  padding-right: calc(var(--safe-right, env(safe-area-inset-right, 0px)) + var(--spacing) * --value(integer));
+}
+@utility pl-safe-* { padding-left: calc(var(--safe-left, env(safe-area-inset-left, 0px)) + var(--spacing) * --value(integer)); }
+@utility pr-safe-* { padding-right: calc(var(--safe-right, env(safe-area-inset-right, 0px)) + var(--spacing) * --value(integer)); }
+
+/* Vertical padding */
+@utility pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+@utility pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+@utility py-safe { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+@utility pt-safe-* { padding-top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * --value(integer)); }
+@utility pb-safe-* { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--spacing) * --value(integer)); }
+@utility py-safe-* {
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * --value(integer));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--spacing) * --value(integer));
+}
+@utility p-safe {
+  padding: env(safe-area-inset-top, 0px) var(--safe-right, env(safe-area-inset-right, 0px))
+           env(safe-area-inset-bottom, 0px) var(--safe-left, env(safe-area-inset-left, 0px));
+}
+@utility p-safe-* {
+  padding: calc(env(safe-area-inset-top, 0px) + var(--spacing) * --value(integer))
+           calc(var(--safe-right, env(safe-area-inset-right, 0px)) + var(--spacing) * --value(integer))
+           calc(env(safe-area-inset-bottom, 0px) + var(--spacing) * --value(integer))
+           calc(var(--safe-left, env(safe-area-inset-left, 0px)) + var(--spacing) * --value(integer));
+}
+
+/* Margins */
+@utility mx-safe {
+  margin-left: var(--safe-left, env(safe-area-inset-left, 0px));
+  margin-right: var(--safe-right, env(safe-area-inset-right, 0px));
+}
+@utility ml-safe { margin-left: var(--safe-left, env(safe-area-inset-left, 0px)); }
+@utility mr-safe { margin-right: var(--safe-right, env(safe-area-inset-right, 0px)); }
+
+/* Positioned offsets */
+@utility left-safe { left: var(--safe-left, env(safe-area-inset-left, 0px)); }
+@utility right-safe { right: var(--safe-right, env(safe-area-inset-right, 0px)); }
+@utility inset-x-safe {
+  left: var(--safe-left, env(safe-area-inset-left, 0px));
+  right: var(--safe-right, env(safe-area-inset-right, 0px));
+}
+@utility left-safe-* { left: calc(var(--safe-left, env(safe-area-inset-left, 0px)) + var(--spacing) * --value(integer)); }
+@utility right-safe-* { right: calc(var(--safe-right, env(safe-area-inset-right, 0px)) + var(--spacing) * --value(integer)); }
+@utility inset-x-safe-* {
+  left: calc(var(--safe-left, env(safe-area-inset-left, 0px)) + var(--spacing) * --value(integer));
+  right: calc(var(--safe-right, env(safe-area-inset-right, 0px)) + var(--spacing) * --value(integer));
+}
+
+@utility top-safe { top: env(safe-area-inset-top, 0px); }
+@utility bottom-safe { bottom: env(safe-area-inset-bottom, 0px); }
+@utility top-safe-* { top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * --value(integer)); }
+@utility bottom-safe-* { bottom: calc(env(safe-area-inset-bottom, 0px) + var(--spacing) * --value(integer)); }
+
+/* Bleed: undo a parent's px-safe or px-safe-N */
+@utility bleed-safe {
+  margin-left: calc(-1 * var(--safe-left, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * var(--safe-right, env(safe-area-inset-right, 0px)));
+}
+@utility bleed-safe-* {
+  margin-left: calc(-1 * (var(--safe-left, env(safe-area-inset-left, 0px)) + var(--spacing) * --value(integer)));
+  margin-right: calc(-1 * (var(--safe-right, env(safe-area-inset-right, 0px)) + var(--spacing) * --value(integer)));
+}
+
+/* Safari's bottom toolbar */
+@utility under-toolbar { bottom: calc(-1 * var(--toolbar-bottom, 0px)); }
+@utility pb-toolbar { padding-bottom: var(--toolbar-bottom, 0px); }
+@utility pb-toolbar-* { padding-bottom: calc(var(--toolbar-bottom, 0px) + var(--spacing) * --value(integer)); }
+
+/* Keyframes and the fallback come from safe-edges.js */
+@utility follow-scroll {
+  @supports (animation-timeline: scroll(root block)) {
+    animation: safe-edges-follow 1s linear both;
+    animation-timeline: scroll(root block);
+  }
+  @supports not (animation-timeline: scroll(root block)) {
+    transform: translateY(var(--scroll-offset, 0px));
+  }
+}
+
+/* The strip */
+@utility strip-cover {
+  display: none;
+  position: absolute;
+  top: 0;
+  height: 100lvh;
+  left: var(--strip-x, 100vw);
+  width: var(--strip-width, 0px);
+  animation: safe-edges-follow 1s linear both;
+  animation-timeline: scroll(root block);
+  :where([data-safe-edges]) & { display: block; }
+}
+@utility strip-rail {
+  display: none;
+  position: absolute;
+  box-sizing: border-box;
+  left: var(--strip-x, 100vw);
+  width: var(--strip-width, 0px);
+  top: var(--strip-slot-top, 0px);
+  height: var(--strip-slot-height, 0px);
+  padding: var(--strip-button-gap, 12px) 0 var(--strip-button-gap, 12px) var(--strip-button-x, 12px);
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: var(--strip-button-gap, 12px);
+  overflow: hidden;
+  animation: safe-edges-follow 1s linear both;
+  animation-timeline: scroll(root block);
+  @supports not (animation-timeline: scroll(root block)) {
+    animation: none;
+    transform: translateY(var(--scroll-offset, 0px));
+  }
+  :where([data-strip-slot]) & { display: flex; }
+}
+/* Matches Safari's strip buttons: a 48px glass circle that takes the page's
+   colour through it (grey over black, near white over white) */
+@utility strip-button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--strip-button-size, 48px);
+  height: var(--strip-button-size, 48px);
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  color: rgb(0 0 0 / 0.85);
+  background: rgb(255 255 255 / 0.5);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.6), 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 2px 8px rgb(0 0 0 / 0.08);
+  cursor: pointer;
+  transition: filter 120ms ease;
+  &[data-pressed], &:active { filter: brightness(0.85); }
+  & svg { width: 22px; height: 22px; }
+}

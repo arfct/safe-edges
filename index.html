@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#121212">
+<title>Safe Area Tester</title>
+<script>
+  // ?narrow leaves the page beside Safari's control strip, for comparison
+  window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };
+</script>
+<script src="safe-edges.js"></script>
+<style>
+  /* Euclid palette (arfct/quantum): Byrne's red, yellow and blue anchors, plus green at matching weight */
+  :root {
+    --byrne-red: #D92B21;      /* red-700 */
+    --byrne-yellow: #F9C12B;   /* amber-300 */
+    --byrne-blue: #0C5D85;     /* sky-800 */
+    --euclid-green: #159F26;   /* green-600 */
+
+    /* Quantum light theme */
+    --background: #ffffff;
+    --surface-dp08: #ffffff;
+    --text-high: rgba(0, 0, 0, 0.87);
+    --text-medium: rgba(0, 0, 0, 0.6);
+    --divider: rgba(0, 0, 0, 0.12);
+    --shadow-dp8: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+    --font-sans: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --radius-medium: 4px;
+
+    --inset-top: env(safe-area-inset-top);
+    --inset-right: env(safe-area-inset-right);
+    --inset-bottom: env(safe-area-inset-bottom);
+    --inset-left: env(safe-area-inset-left);
+  }
+  @supports (color: oklch(0 0 0)) {
+    :root {
+      --byrne-red: oklch(0.574 0.2096 29.02);
+      --byrne-yellow: oklch(0.8395 0.1622 85.99);
+      --byrne-blue: oklch(0.4532 0.0961 238.25);
+      --euclid-green: oklch(0.6118 0.1917 143.96);
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #121212;
+      --surface-dp08: #2e2e2e;
+      --text-high: rgba(255, 255, 255, 0.87);
+      --text-medium: rgba(255, 255, 255, 0.6);
+      --divider: rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  html, body { margin: 0; background: var(--background); color: var(--text-high);
+               font: 400 16px/24px var(--font-sans); letter-spacing: 0.5px; -webkit-text-size-adjust: 100%; }
+
+  /* Half-opaque so overlapping corners mix; red and blue come last in the DOM so they sit on top */
+  .insets { position: fixed; inset: 0; pointer-events: none; }
+  .inset  { position: absolute; opacity: 0.5; pointer-events: none; }
+  .top    { top: 0; left: 0; right: 0; height: var(--inset-top); background: var(--byrne-red); }
+  .bottom { bottom: 0; left: 0; right: 0; height: var(--inset-bottom); background: var(--byrne-blue); }
+  /* Left and right span the page instead of the viewport: Safari clips fixed boxes at its control
+     strip, so only absolute boxes can reach under it. --safe-* is env() plus the strip (safe-edges.js). */
+  html    { position: relative; }
+  .left   { top: 0; bottom: 0; left: 0; width: var(--safe-left); background: var(--euclid-green); }
+  .right  { top: 0; bottom: 0; right: 0; width: var(--safe-right); background: var(--byrne-yellow); }
+  /* Safari's bottom toolbar and the strip's empty slot sit outside the layout viewport too, so they
+     are absolute boxes moved with the scroll, inside a page-sized box that clips them */
+  /* Zero-size box with layout containment: its children overflow as ink, so they can sit below the end of the
+     page (the toolbar band at the bottom of the scroll) without adding scroll height */
+  .page-overlay { position: absolute; left: 0; top: 0; width: 0; height: 0; contain: layout; pointer-events: none; }
+  .toolbar { left: 0; width: var(--true-width); background: var(--byrne-blue); }
+  /* The strip's empty slot, edge to edge, with demo buttons laid out like Safari's own: 48px circles
+     on its button column, 12px padding and gaps (--strip-button-* from safe-edges.js) */
+  :root { --slot-color: #7B3FA0; }
+  .slot    { box-sizing: border-box; opacity: 1; background: color-mix(in srgb, var(--slot-color) 50%, transparent);
+             display: flex; flex-direction: column; justify-content: flex-end; gap: var(--strip-button-gap);
+             padding: var(--strip-button-gap) 0 var(--strip-button-gap) var(--strip-button-x); overflow: hidden; }
+  .slot-swatch { background: color-mix(in srgb, var(--slot-color) 50%, transparent); }
+  .slot-button[data-pressed] { filter: brightness(0.8); }
+  .slot-button { flex: none; display: grid; place-items: center; width: var(--strip-button-size); height: var(--strip-button-size);
+                 border-radius: 50%; color: rgba(0, 0, 0, 0.85); background: rgba(255, 255, 255, 0.5);
+                 -webkit-backdrop-filter: blur(16px) saturate(1.8); backdrop-filter: blur(16px) saturate(1.8);
+                 box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.6), 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.08);
+                 font: 500 15px/1 var(--font-sans); font-variant-numeric: tabular-nums; }
+  .inset[hidden] { display: none; }
+
+  /* Taller than the viewport so scrolling can collapse mobile browser toolbars and move the dvh line */
+  body { min-height: 200lvh; }
+
+  .guide { position: fixed; top: 0; left: 0; box-sizing: border-box; border: 1px dotted var(--text-high);
+           pointer-events: none; z-index: 1; }
+  .guide[hidden] { display: none; }
+  .guide-label { position: absolute; right: calc(var(--inset-right) + 8px); bottom: calc(var(--inset-bottom) + 4px);
+                 color: var(--text-medium); font: 500 11px/16px var(--font-sans); letter-spacing: 0.4px;
+                 font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .measure-picker { appearance: none; -webkit-appearance: none; border: 0; margin: 0 0 0 -4px; padding: 4px 20px 4px 4px;
+                    border-radius: var(--radius-medium); color: inherit; font: inherit; font-size: 14px; letter-spacing: 0.25px;
+                    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 4px center;
+                    cursor: pointer; field-sizing: content; }
+  .measure-picker:hover { background-color: var(--divider); }
+  .measure-picker:focus-visible { outline: 2px solid var(--text-medium); outline-offset: 2px; }
+  .measure-picker option { color: initial; }
+
+  .safe { position: fixed; top: var(--inset-top); right: var(--inset-right); bottom: var(--inset-bottom); left: var(--inset-left);
+          outline: 1px dashed var(--text-medium); outline-offset: -1px;
+          display: grid; place-items: center; padding: 16px; box-sizing: border-box; overflow: auto; }
+
+  .card { background: var(--surface-dp08); box-shadow: var(--shadow-dp8); border-radius: var(--radius-medium);
+          padding: 16px 16px 8px; min-width: 240px; }
+  @supports (corner-shape: superellipse(1.39)) {
+    .card { corner-shape: superellipse(1.39); border-radius: calc(var(--radius-medium) * 1.24418); }
+  }
+  .overline { font-size: 10px; line-height: 16px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-medium); }
+  .overline-detail { margin-left: 12px; }
+  #insetLegend { text-transform: none; letter-spacing: 0.4px; }
+
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { display: flex; align-items: center; gap: 12px; height: 40px; }
+  .section + .section { margin-top: 16px; }
+  .swatch { width: 16px; height: 16px; border-radius: 2px; }
+  .side { flex: 1; font-size: 14px; letter-spacing: 0.25px; }
+  .value { font-weight: 500; font-variant-numeric: tabular-nums; }
+  .value.virtual { font-style: italic; }
+  .value + .source { margin: 0 0 0 6px; }
+  .source { margin-right: 8px; font-size: 12px; font-weight: 400; letter-spacing: 0.4px; color: var(--text-medium); }
+  .overline-row { display: flex; align-items: center; justify-content: space-between; }
+  .strip-toggle { font: 500 14px/20px var(--font-sans); letter-spacing: 1.25px; text-transform: uppercase; color: inherit;
+                  background: none; border: 0; padding: 4px 8px; margin: 0 -8px 0 0; border-radius: var(--radius-medium); cursor: pointer; }
+  .strip-toggle:hover { background-color: var(--divider); }
+</style>
+</head>
+<body>
+<div class="inset left"></div><div class="inset right"></div>
+<div class="page-overlay"><div class="inset toolbar" id="toolbarBand" data-follow-scroll hidden></div><div class="inset slot" id="slotBox" data-follow-scroll hidden></div></div>
+<div class="insets"><div class="inset top"></div><div class="inset bottom"></div></div>
+<div class="guide" id="guide" hidden><span class="guide-label" id="guideLabel"></span></div>
+<main class="safe">
+  <section class="card">
+    <div class="section">
+      <div class="overline-row"><span class="overline">Safe area<span class="overline-detail" id="insetLegend"></span></span><span id="widthToggle"></span></div>
+      <ul id="insetList"></ul>
+      <ul id="stripList"></ul>
+    </div>
+    <div class="section">
+      <div class="overline">Dimensions<span class="overline-detail" id="orientationInfo"></span></div>
+      <ul id="dimensionList"></ul>
+      <ul><li><span class="side" id="measurePickerSlot"></span><span class="value" id="measureValue"></span></li></ul>
+    </div>
+  </section>
+</main>
+<script>
+const sides = [
+  { name: 'Top', color: 'var(--byrne-red)' },
+  { name: 'Right', color: 'var(--byrne-yellow)' },
+  { name: 'Bottom', color: 'var(--byrne-blue)' },
+  { name: 'Left', color: 'var(--euclid-green)' },
+];
+const probe = document.createElement('div');
+probe.style.cssText = 'position:fixed;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+document.body.appendChild(probe);
+
+function render() {
+  const measured = getComputedStyle(probe);
+  // Safari's control strip (iPhone Duo) adds to the right or left inset, and its address bar below
+  // the layout viewport adds to the bottom; env() reports neither
+  const { active, side, strip, slot, toolbar } = SafeEdges.state;
+  const extra = { Top: 0, Right: 0, Bottom: 0, Left: 0 };
+  const sources = {};
+  if (active) {
+    extra[side === 'left' ? 'Left' : 'Right'] = strip;
+    sources[side === 'left' ? 'Left' : 'Right'] = 'strip';
+    if (toolbar) { extra.Bottom = toolbar; sources.Bottom = 'toolbar'; }
+  }
+  // Real is env(); virtual is what safe-edges.js derived
+  insetList.innerHTML = sides.map(({ name, color }) => {
+    const real = parseFloat(measured['padding' + name]);
+    const total = real + extra[name];
+    // Virtual only: italic total. Real and virtual: total (real + virtual).
+    const virtual = extra[name] > 0;
+    const parts = virtual && real ? `<span class="source">(${real} + ${extra[name]})</span>` : '';
+    const label = sources[name] ? `${name} <span class="source">${sources[name]}</span>` : name;
+    return `<li><span class="swatch" style="background:${color}"></span><span class="side">${label}</span><span class="value${virtual && !real ? ' virtual' : ''}">${total}px</span>${parts}</li>`;
+  }).join('');
+  insetLegend.innerHTML = active ? '<i>italic</i> virtual' : '';
+  stripList.innerHTML = active && slot ? `<li><span class="swatch slot-swatch"></span><span class="side">Toolbar slot`
+    + ` <span class="source">${slot.top}–${slot.top + slot.height}</span></span><span class="value">${slot.height}px</span>`
+    + `<span class="source">${slotButtons(slot)} × ${slot.button.size}</span></li>`
+    + (slotTaps ? `<li><span class="swatch"></span><span class="side">Slot tap</span><span class="value">${slotTapText}</span></li>` : '') : '';
+  if (active && slot) slotBox.innerHTML = Array.from({ length: slotButtons(slot) }, (_, i) => `<span class="slot-button" data-strip-tap onclick="tapSlot(${i + 1})">${i + 1}</span>`).join('');
+  widthToggle.innerHTML = strip ? `<button class="strip-toggle" type="button" onclick="toggleWide()">${active ? 'Narrow' : 'Wide'}</button>` : '';
+  placeOverlay();
+  // Browser zoom shows up as a ratio between the window and view widths; it also scales devicePixelRatio
+  const viewWidth = (SafeEdges.state.layoutWidth ?? innerWidth) + strip;
+  const zoom = outerWidth && viewWidth ? outerWidth / viewWidth : 1;
+  const zoomPercent = Math.round(zoom * 100);
+  const dimensions = [
+    { name: 'Screen', value: `${+(devicePixelRatio / zoom).toFixed(2)}x  ${screen.width} × ${screen.height}` },
+    { name: 'Window', value: `${screenX ? `at ${screenX}  ` : ''}${outerWidth} × ${outerHeight}` },
+  ];
+  dimensionList.innerHTML = dimensions.map(({ name, value }) =>
+    `<li><span class="side">${name}</span><span class="value">${value}</span></li>`
+  ).join('');
+  zoomText = zoomPercent !== 100 ? `(${zoomPercent}%) ` : '';
+  orientationInfo.textContent = screen.orientation?.type ?? '';
+  renderGuide();
+}
+
+const unitProbe = document.createElement('div');
+unitProbe.style.cssText = 'position:absolute;visibility:hidden;top:0;left:0;width:0;height:0';
+document.body.appendChild(unitProbe);
+
+function measureCss(width, height) {
+  unitProbe.style.width = width;
+  unitProbe.style.height = height;
+  const { width: measuredWidth, height: measuredHeight } = unitProbe.getBoundingClientRect();
+  return { width: measuredWidth, height: measuredHeight };
+}
+
+let zoomText = '';
+
+const measures = {
+  view: { label: 'View', size: () => ({ width: innerWidth, height: innerHeight }) },
+  dvh: { label: 'Dynamic (dv)', size: () => measureCss('100dvw', '100dvh') },
+  svh: { label: 'Small (sv)', size: () => measureCss('100svw', '100svh') },
+  lvh: { label: 'Large (lv)', size: () => measureCss('100lvw', '100lvh') },
+  visual: { label: 'Visual (vv)', size: () => visualViewport
+    ? { width: visualViewport.width, height: visualViewport.height, left: visualViewport.offsetLeft, top: visualViewport.offsetTop }
+    : { width: innerWidth, height: innerHeight } },
+};
+let selectedMeasure = localStorage.getItem('measure') in measures ? localStorage.getItem('measure') : 'view';
+
+function measurePicker() {
+  const options = Object.entries(measures).map(([key, { label }]) =>
+    `<option value="${key}"${key === selectedMeasure ? ' selected' : ''}>${label}</option>`).join('');
+  return `<select class="measure-picker" aria-label="Viewport measure" onchange="selectMeasure(this.value)">${options}</select>`;
+}
+
+// Built once, outside render(), so a resize while the picker is open doesn't replace it
+measurePickerSlot.innerHTML = measurePicker();
+
+function selectMeasure(key) {
+  selectedMeasure = key;
+  localStorage.setItem('measure', key);
+  renderGuide();
+}
+
+function renderGuide() {
+  const measure = measures[selectedMeasure];
+  guide.hidden = false;
+  const { width, height, left = 0, top = 0 } = measure.size();
+  const sizeText = `${+width.toFixed(1)} × ${+height.toFixed(1)}`;
+  Object.assign(guide.style, { width: `${width}px`, height: `${height}px`, left: `${left}px`, top: `${top}px` });
+  guideLabel.textContent = `${measure.label}  ${sizeText}`;
+  measureValue.textContent = (selectedMeasure === 'view' ? zoomText : '') + sizeText;
+}
+visualViewport?.addEventListener('resize', renderGuide);
+visualViewport?.addEventListener('scroll', renderGuide);
+addEventListener('scroll', renderGuide, { passive: true });
+// How many of Safari's strip buttons fit the slot with its padding and gaps,
+// capped for Live Activities pushing Safari's upper buttons down
+function slotButtons({ height, buttons, button: { size, gap } }) {
+  return Math.min(buttons, Math.max(0, Math.floor((height - gap) / (size + gap))));
+}
+// The toolbar band and slot box are placed in window coordinates; data-follow-scroll keeps them there
+// on the root scroll timeline (fixed boxes aren't drawn in the strip or the toolbar)
+function placeOverlay() {
+  const { active, slot, toolbar } = SafeEdges.state;
+  toolbarBand.hidden = !(active && toolbar);
+  if (!toolbarBand.hidden) Object.assign(toolbarBand.style, { top: `${innerHeight}px`, height: `${toolbar}px` });
+  slotBox.hidden = !(active && slot);
+  if (!slotBox.hidden) Object.assign(slotBox.style, {
+    top: `${slot.top}px`, height: `${slot.height}px`,
+    left: 'var(--strip-x)', width: 'var(--strip-width)' });
+}
+visualViewport?.addEventListener('resize', placeOverlay);
+// Slot buttons report taps, routed to them by safe-edges.js
+let slotTaps = 0, slotTapText = '';
+function tapSlot(n) {
+  slotTaps++;
+  slotTapText = `${n} · ${slotTaps}×`;
+  render();
+}
+function toggleWide() {
+  const url = new URL(location.href);
+  url.searchParams.has('narrow') ? url.searchParams.delete('narrow') : url.searchParams.set('narrow', '');
+  location.replace(url);
+}
+addEventListener('safeedgeschange', render);
+addEventListener('resize', render);
+addEventListener('orientationchange', () => setTimeout(render, 300));
+render();
+</script>
+</body>
+</html>

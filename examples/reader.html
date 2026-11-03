@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en" class="relative bg-paper text-ink dark:bg-zinc-950 dark:text-zinc-100">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Ratio · Duo true width</title>
+<script>window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };</script>
+<script src="../safe-edges.js"></script>
+<script src="kit.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<!--
+  Reader: a document that scrolls, so Safari's toolbar shrinks as you read.
+  - The masthead is absolute + follow-scroll: it stays at the top like a fixed header but, unlike
+    one, is drawn under Safari's strip.
+  - Text is padded clear of the strip with px-safe-5; art and pull quotes bleed under it.
+  - The strip slot holds text size and back to top.
+-->
+<body class="font-sans antialiased">
+<header id="masthead" class="follow-scroll absolute inset-x-0 top-0 z-20 border-b border-black/10 bg-paper/95 px-safe-5 pt-safe-2 dark:border-white/10 dark:bg-zinc-950/95">
+  <div class="flex h-12 items-center justify-between gap-3">
+    <a href="#" class="font-serif text-2xl font-semibold tracking-tight">Ratio</a>
+    <span id="masthead-tools" class="flex items-center gap-3"></span>
+  </div>
+</header>
+<main id="view" class="pt-[calc(env(safe-area-inset-top)+3.75rem)] pb-safe-16"></main>
+<nav class="strip-rail z-30" aria-label="Reading">
+  <button class="strip-button" data-icon="text" aria-label="Text size" onclick="cycleTextSize()"></button>
+  <button class="strip-button" data-icon="up" aria-label="Back to top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"></button>
+</nav>
+<script>
+const stories = [
+  { kicker: 'Hardware', title: 'The width you were promised', dek: 'Eighty-four points sit beside every page on the outer display. Here is how to take them back.', minutes: 6 },
+  { kicker: 'Design', title: 'Byrne’s colours, two centuries on', dek: 'Oliver Byrne drew Euclid in red, yellow and blue. The palette still teaches.', minutes: 4 },
+  { kicker: 'Field notes', title: 'A folding phone, folded', dek: 'Three weeks with the outer screen as the only screen.', minutes: 8 },
+  { kicker: 'Web', title: 'Safe areas nobody reports', dek: 'env() says zero. The window says eighty-four. Who is right?', minutes: 5 },
+  { kicker: 'Essay', title: 'Against the letterbox', dek: 'Every reserved strip is a decision someone made for you.', minutes: 7 },
+];
+const body = [
+  'The outer display is wider and shorter than any other iPhone screen, and Safari moves its controls to the side to keep the height. Pages are laid out in what is left: 382 CSS pixels of a 466 point window.',
+  'This page takes the width back. The masthead, the artwork and the pull quote run under Safari’s controls; the paragraphs are padded clear of them, so nothing you read sits behind a button.',
+  'It is still an ordinary document. It scrolls, Safari’s toolbar shrinks as it does, and the masthead stays at the top. A fixed header would stop at the strip, because Safari doesn’t draw fixed boxes there. This one is absolute and rides the page’s scroll timeline instead.',
+  'The two buttons beside the text are the page’s own. They sit in the gap Safari leaves between its upper and lower buttons, styled to match. Safari doesn’t send taps there to the element under the finger, so the script works out which button you meant.',
+  'Rotate the phone, open the inner display, or turn on a Live Activity, and the layout adapts or steps back. Where the script can’t be sure what Safari is doing, it leaves the page as Safari laid it out.',
+];
+const sizes = ['text-[1.0rem] leading-7', 'text-[1.125rem] leading-8', 'text-[1.3rem] leading-9'];
+let size = Number(localStorage.getItem('ratio-size') || 0);
+
+function cycleTextSize() {
+  size = (size + 1) % sizes.length;
+  localStorage.setItem('ratio-size', size);
+  render();
+}
+
+function feed() {
+  const [lead, ...rest] = stories;
+  return `
+    <a href="#story-0" class="block">
+      <div class="aspect-[4/3] w-true bg-cover bg-center" style="background-image:${art(11, { width: 466, height: 350 })}"></div>
+      <div class="px-safe-5 pt-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-byrne-red">${lead.kicker}</p>
+        <h2 class="mt-1 font-serif text-3xl leading-tight">${lead.title}</h2>
+        <p class="mt-2 text-black/65 dark:text-white/65">${lead.dek}</p>
+      </div>
+    </a>
+    <h3 class="mt-8 border-t border-black/10 px-safe-5 pt-3 text-xs font-semibold uppercase tracking-[0.18em] text-black/50 dark:border-white/10 dark:text-white/50">Latest</h3>
+    <ul>${rest.map((story, i) => `
+      <li><a href="#story-${i + 1}" class="flex gap-4 border-b border-black/10 px-safe-5 py-4 dark:border-white/10">
+        <span class="min-w-0 flex-1">
+          <span class="block text-xs font-semibold uppercase tracking-[0.18em] text-byrne-blue dark:text-sky-300">${story.kicker}</span>
+          <span class="mt-1 block font-serif text-xl leading-snug">${story.title}</span>
+          <span class="mt-1 block text-sm text-black/55 dark:text-white/55">${story.minutes} min read</span>
+        </span>
+        <span class="size-20 shrink-0 rounded-md bg-cover bg-center" style="background-image:${art(20 + i, { width: 160, height: 160 })}"></span>
+      </a></li>`).join('')}
+    </ul>
+    <p class="px-safe-5 pt-6 text-sm text-black/50 dark:text-white/50">The lead image and the dividers run under Safari’s strip; headlines and thumbnails stop clear of it.</p>`;
+}
+
+function story(index) {
+  const s = stories[index], next = stories[(index + 1) % stories.length];
+  const p = text => `<p class="mt-5 px-safe-5 font-serif ${sizes[size]}">${text}</p>`;
+  return `
+    <article>
+      <div class="px-safe-5 pt-4">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-byrne-red">${s.kicker} · ${s.minutes} min</p>
+        <h1 class="mt-2 font-serif text-4xl leading-tight">${s.title}</h1>
+        <p class="mt-3 text-lg text-black/65 dark:text-white/65">${s.dek}</p>
+      </div>
+      <figure class="mt-6">
+        <div class="aspect-[3/2] w-true bg-cover bg-center" style="background-image:${art(11 + index * 7, { width: 466, height: 310 })}"></div>
+        <figcaption class="mt-2 px-safe-5 text-sm text-black/55 dark:text-white/55">Full bleed: the artwork is w-true, the window’s width, and runs under the strip.</figcaption>
+      </figure>
+      ${p(body[0])}${p(body[1])}
+      <blockquote class="mt-7 bg-byrne-blue px-safe-5 py-6 font-serif text-2xl leading-snug text-white">“Pages built for phones fit whatever width they are handed.”</blockquote>
+      ${p(body[2])}${p(body[3])}${p(body[4])}
+      <a href="#story-${(index + 1) % stories.length}" class="mt-10 flex items-center gap-4 border-y border-black/10 px-safe-5 py-5 dark:border-white/10">
+        <span class="min-w-0 flex-1"><span class="block text-xs font-semibold uppercase tracking-[0.18em] text-black/50 dark:text-white/50">Next</span>
+        <span class="mt-1 block font-serif text-xl leading-snug">${next.title}</span></span>
+        <span class="size-16 shrink-0 rounded-md bg-cover bg-center" style="background-image:${art(20 + ((index + 1) % stories.length), { width: 128, height: 128 })}"></span>
+      </a>
+    </article>`;
+}
+
+function render() {
+  const match = location.hash.match(/^#story-(\d+)$/);
+  view.innerHTML = match ? story(Number(match[1]) % stories.length) : feed();
+  document.getElementById('masthead-tools').innerHTML = match
+    ? `<a href="#" class="text-sm font-medium text-byrne-blue dark:text-sky-300">All stories</a>`
+    : `${widthToggle('text-byrne-blue ring-byrne-blue/30 dark:text-sky-300 dark:ring-sky-300/30')}${examplesLink('text-byrne-blue dark:text-sky-300')}`;
+}
+addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" class="relative bg-paper text-ink dark:bg-zinc-950 dark:text-zinc-100">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Article · Duo true width</title>
+<script>
+  // ?narrow leaves the page beside Safari's control strip, for comparison
+  window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };
+</script>
+<script src="../safe-edges.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="font-sans antialiased">
+<header class="relative overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,var(--color-byrne-yellow),var(--color-byrne-red)_55%,oklch(0.3_0.1_20))] text-white">
+  <div class="px-safe-5 pt-safe-5 flex items-center justify-between"><a href="index.html" class="inline-flex items-center gap-1 text-sm font-medium text-white/80"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Examples</a><a data-width-toggle class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ring-1 text-white/80 ring-white/40"></a></div>
+  <div class="px-safe-5 pt-24 pb-8">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">Field notes</p>
+    <h1 class="mt-2 font-serif text-4xl leading-tight">The width you were promised</h1>
+    <p class="mt-3 text-white/85">Eighty-four points, recovered.</p>
+  </div>
+</header>
+<main class="px-safe-5 pb-safe-16">
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">The outer display is wider and shorter than any other iPhone screen, and Safari moves its controls to the side to keep the height. Pages get laid out in what is left: 382 CSS pixels of a 466 point window.</p>
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">This page takes the whole width back. The hero, the figures and the pull quote run under Safari’s controls; the paragraphs are padded clear of them with <code class="font-mono text-[0.85em]">px-safe-5</code>, so nothing you read sits behind a button.</p>
+  <figure class="bleed-safe-5 mt-7">
+    <div class="h-56 bg-[linear-gradient(90deg,var(--color-byrne-blue)_0_25%,var(--color-euclid-green)_25%_50%,var(--color-byrne-yellow)_50%_75%,var(--color-byrne-red)_75%)]"></div>
+    <figcaption class="px-safe-5 mt-2 text-sm text-black/60 dark:text-white/60">A figure with <span class="font-mono text-xs">bleed-safe-5</span>: four equal bands across the whole window. With the strip, the red band runs under Safari’s controls.</figcaption>
+  </figure>
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">It still scrolls as a document. Safari’s toolbar shrinks as you scroll, the way it does on any page, because nothing here holds the scroll in an inner container.</p>
+  <blockquote class="bleed-safe-5 mt-7 bg-byrne-blue px-safe-5 py-6 font-serif text-2xl leading-snug text-white">“Pages built for phones fit whatever width they are handed.”</blockquote>
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">Fixed and sticky boxes are the exception. Safari clips them at the layout width, so a sticky bar here stops at the strip no matter what width it asks for. Pages that need a header across the whole window use an app shell instead, like the Inbox example.</p>
+  <div class="sticky top-0 mt-7 bleed-safe-5 bg-byrne-red px-safe-5 py-2 text-sm font-medium text-white">Sticky bar: clipped at the layout width</div>
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">The outer display is wider and shorter than any other iPhone screen, and Safari moves its controls to the side to keep the height. Pages get laid out in what is left: 382 CSS pixels of a 466 point window.</p>
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">It still scrolls as a document. Safari’s toolbar shrinks as you scroll, the way it does on any page, because nothing here holds the scroll in an inner container.</p>
+  <p class="mt-5 font-serif text-[1.075rem] leading-7">This page takes the whole width back. The hero, the figures and the pull quote run under Safari’s controls; the paragraphs are padded clear of them with <code class="font-mono text-[0.85em]">px-safe-5</code>, so nothing you read sits behind a button.</p>
+</main>
+<!-- Document scroll: the rail follows the scroll on the root scroll timeline -->
+<nav class="strip-rail z-20" aria-label="Article actions">
+  <button class="strip-button" aria-label="Back to top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></button>
+  <button class="strip-button" aria-label="Text size" onclick="document.querySelector('main').classList.toggle('[&_p]:text-xl')"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></svg></button>
+</nav>
+<script src="toggle.js"></script>
+</body>
+</html>

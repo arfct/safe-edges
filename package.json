@@ -1,0 +1,12 @@
+{
+  "name": "safe-edges",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i examples/src.css -o examples/app.css --minify",
+    "watch": "tailwindcss -i examples/src.css -o examples/app.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

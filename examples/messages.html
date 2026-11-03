@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" class="h-full overflow-hidden bg-paper text-ink dark:bg-zinc-950 dark:text-zinc-100">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Messages · Duo true width</title>
+<script>window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };</script>
+<script src="../safe-edges.js"></script>
+<script src="kit.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<!--
+  Messages: an app shell. The root doesn't scroll; each view has its own scroller.
+  - Headers and the composer are absolute and span the window, under Safari's strip.
+  - Scrollers extend under Safari's bottom toolbar (under-toolbar) and pad their end above it
+    (pb-toolbar), so rows slide behind the toolbar instead of stopping short of it.
+  - The composer's background runs under the toolbar; its field sits above it.
+  - The strip slot holds compose and search on the list, call and video in a thread.
+-->
+<body class="relative h-full font-sans antialiased">
+<div id="app" class="absolute inset-0"></div>
+<nav id="rail" class="strip-rail z-30" aria-label="Actions"></nav>
+<div id="toast" class="pointer-events-none absolute inset-x-0 top-24 z-40 hidden text-center">
+  <span class="inline-block rounded-full bg-black/80 px-4 py-2 text-sm text-white"></span>
+</div>
+<script>
+const people = [
+  { name: 'Ada Lovelace', hue: 0, messages: [['them', 'Did the engine run overnight?'], ['me', 'It did. Bernoulli numbers through the twentieth.'], ['them', 'Then the loom is weaving algebra.'], ['them', 'Send me the cards when you can.']] },
+  { name: 'Oliver Byrne', hue: 210, messages: [['them', 'Proposition 47 is ready in colour.'], ['me', 'Red for the hypotenuse?'], ['them', 'Red, yellow and blue. No letters at all.']] },
+  { name: 'Grace Hopper', hue: 140, messages: [['them', 'I have a nanosecond for you.'], ['me', 'How long is it?'], ['them', 'Eleven point eight inches of wire.'], ['me', 'I’ll keep it on my desk.']] },
+  { name: 'Charles Babbage', hue: 280, messages: [['them', 'What would you put under the controls?'], ['me', 'Headers that span the window. Buttons in the gap.'], ['them', 'Then the engine shall compute the rest.']] },
+  { name: 'Euclid', hue: 40, messages: [['them', 'A point is that which has no part.'], ['me', 'And a strip is that which has no inset.']] },
+  { name: 'Claude Shannon', hue: 180, messages: [['them', 'Reproduce at one point a message selected at another.'], ['me', 'Working on it.']] },
+  { name: 'Margaret Hamilton', hue: 330, messages: [['them', 'Priority displays are up.'], ['me', 'Landing on schedule?'], ['them', 'There was no choice but to be pioneers.']] },
+  { name: 'Susan Kare', hue: 20, messages: [['them', 'A good icon is like a road sign.'], ['me', 'These ones are 48 points round.']] },
+];
+const initials = name => name.split(' ').map(w => w[0]).join('').slice(0, 2);
+const avatar = (p, size = 'size-11 text-sm') => `<span class="grid ${size} shrink-0 place-items-center rounded-full font-semibold text-white" style="background:hsl(${p.hue} 55% 48%)">${initials(p.name)}</span>`;
+
+function toast(text) {
+  toastEl.querySelector('span').textContent = text;
+  toastEl.classList.remove('hidden');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => toastEl.classList.add('hidden'), 1400);
+}
+const toastEl = document.getElementById('toast');
+
+function list() {
+  rail.innerHTML = `
+    <button class="strip-button" data-icon="pencil" aria-label="New message" onclick="location.hash = '#thread-3'"></button>
+    <button class="strip-button" data-icon="search" aria-label="Search" onclick="document.getElementById('search').focus()"></button>`;
+  return `
+    <main class="absolute inset-x-0 top-0 under-toolbar overflow-y-auto overscroll-contain pt-[calc(env(safe-area-inset-top)+8.5rem)] pb-toolbar">
+      <ul>${people.map((p, i) => `
+        <li><a href="#thread-${i}" class="flex gap-3 border-b border-black/10 px-safe-4 py-3 dark:border-white/10">
+          ${avatar(p)}
+          <span class="min-w-0 flex-1">
+            <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">${p.name}</span>
+              <span class="shrink-0 text-xs text-black/50 dark:text-white/50">${9 + i}:${String((i * 13) % 60).padStart(2, '0')}</span></span>
+            <span class="line-clamp-2 text-sm text-black/60 dark:text-white/60">${p.messages.at(-1)[1]}</span>
+          </span>
+        </a></li>`).join('')}
+      </ul>
+      <p class="px-safe-4 py-6 text-center text-sm text-black/50 dark:text-white/50">The list scrolls behind Safari’s address bar; the last row stops above it.</p>
+    </main>
+    <header class="absolute inset-x-0 top-0 z-10 border-b border-black/10 bg-paper/95 px-safe-4 pt-safe-3 pb-3 dark:border-white/10 dark:bg-zinc-950/95">
+      <div class="flex items-center justify-between">${examplesLink('text-byrne-blue dark:text-sky-300')}${widthToggle('text-byrne-blue ring-byrne-blue/30 dark:text-sky-300 dark:ring-sky-300/30')}</div>
+      <h1 class="mt-2 text-3xl font-bold tracking-tight">Messages</h1>
+      <label class="mt-2 flex items-center gap-2 rounded-xl bg-black/5 px-3 py-2 text-black/50 dark:bg-white/10 dark:text-white/50">
+        ${icon('search', 16)}<input id="search" class="min-w-0 flex-1 bg-transparent text-base text-ink outline-none dark:text-white" placeholder="Search">
+      </label>
+    </header>`;
+}
+
+function thread(index) {
+  const p = people[index];
+  rail.innerHTML = `
+    <button class="strip-button" data-icon="phone" aria-label="Call" onclick="toast('Calling ${p.name}…')"></button>
+    <button class="strip-button" data-icon="video" aria-label="Video" onclick="toast('Video with ${p.name}…')"></button>`;
+  const bubble = ([who, text]) => who === 'me'
+    ? `<div class="flex justify-end"><p class="max-w-[75%] rounded-3xl rounded-br-md bg-byrne-blue px-4 py-2 text-white">${text}</p></div>`
+    : `<div class="flex"><p class="max-w-[75%] rounded-3xl rounded-bl-md bg-black/7 px-4 py-2 dark:bg-white/12">${text}</p></div>`;
+  return `
+    <main id="scroller" class="absolute inset-x-0 top-0 bottom-0 overflow-y-auto overscroll-contain px-safe-3 pt-[calc(env(safe-area-inset-top)+5.5rem)] pb-20">
+      <p class="pb-4 text-center text-xs text-black/45 dark:text-white/45">Today</p>
+      <div id="bubbles" class="flex flex-col gap-2">${p.messages.map(bubble).join('')}</div>
+    </main>
+    <header class="absolute inset-x-0 top-0 z-10 border-b border-black/10 bg-paper/95 px-safe-3 pt-safe-2 pb-2 dark:border-white/10 dark:bg-zinc-950/95">
+      <div class="grid grid-cols-[1fr_auto_1fr] items-center">
+        <a href="#" class="inline-flex items-center text-byrne-blue dark:text-sky-300">${icon('back')}<span>Messages</span></a>
+        <span class="flex flex-col items-center gap-1">${avatar(p, 'size-10 text-sm')}<span class="text-xs font-semibold">${p.name}</span></span>
+        <span></span>
+      </div>
+    </header>
+    <form id="composer" class="absolute inset-x-0 under-toolbar z-10 flex items-center gap-2 border-t border-black/10 bg-paper/95 px-safe-3 pt-2 pb-toolbar-2 dark:border-white/10 dark:bg-zinc-950/95"
+          onsubmit="event.preventDefault(); send(${index})">
+      <input id="field" class="min-w-0 flex-1 rounded-full border border-black/15 bg-white px-4 py-2 text-base outline-none dark:border-white/15 dark:bg-zinc-900" placeholder="Message" autocomplete="off">
+      <button class="grid size-9 shrink-0 place-items-center rounded-full bg-byrne-blue text-white" aria-label="Send">${icon('send', 18)}</button>
+    </form>`;
+}
+
+function send(index) {
+  const field = document.getElementById('field');
+  const text = field.value.trim() || 'Sent from the outer display.';
+  people[index].messages.push(['me', text]);
+  field.value = '';
+  render();
+}
+
+function render() {
+  const match = location.hash.match(/^#thread-(\d+)$/);
+  app.innerHTML = match ? thread(Number(match[1]) % people.length) : list();
+  const scroller = document.getElementById('scroller');
+  if (scroller) scroller.scrollTop = scroller.scrollHeight;
+}
+addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>

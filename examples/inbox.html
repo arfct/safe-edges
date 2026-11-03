@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" class="h-full overflow-hidden bg-paper text-ink dark:bg-zinc-950 dark:text-zinc-100">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Inbox · Duo true width</title>
+<script>
+  // ?narrow leaves the page beside Safari's control strip, for comparison
+  window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };
+</script>
+<script src="../safe-edges.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="relative h-full font-sans antialiased">
+<!-- App shell: the root doesn't scroll, so absolute boxes (header, rail) stay put and can span the strip -->
+<main id="scroller" class="absolute inset-0 overflow-y-auto overscroll-contain pt-[calc(env(safe-area-inset-top)+8rem)]">
+  <ul>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-red text-sm font-semibold text-white">AL</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Ada Lovelace</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">9:00</span></span>
+          <span class="block truncate text-sm">Notes on the engine</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">The analytical engine weaves algebraic patterns just as the Jacquard loom weaves flowers and leaves.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-blue text-sm font-semibold text-white">E</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Euclid</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">9:07</span></span>
+          <span class="block truncate text-sm">Proposition 47</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">In right-angled triangles the square on the side opposite the right angle equals the squares on the sides containing it.</span>
+        </span>
+      </li>
+      <li class="bg-byrne-blue/10 dark:bg-sky-400/10 border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-euclid-green text-sm font-semibold text-white">OB</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Oliver Byrne</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">9:14</span></span>
+          <span class="block truncate text-sm">Colour plates</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">The proofs are drawn in red, yellow and blue, so a learner can follow them without letters.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-yellow text-sm font-semibold text-white">GH</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Grace Hopper</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">10:21</span></span>
+          <span class="block truncate text-sm">Nanoseconds</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">Here is a piece of wire 11.8 inches long, the distance light travels in a billionth of a second.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-red text-sm font-semibold text-white">CB</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Charles Babbage</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">10:28</span></span>
+          <span class="block truncate text-sm">The difference engine</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">Errors using inadequate data are much less than those using no data at all.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-blue text-sm font-semibold text-white">AY</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Ada Yonath</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">10:35</span></span>
+          <span class="block truncate text-sm">Ribosome maps</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">Forty thousand atoms, placed one by one.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-euclid-green text-sm font-semibold text-white">AK</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Alan Kay</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">11:42</span></span>
+          <span class="block truncate text-sm">Dynabook</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">The best way to predict the future is to invent it.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-yellow text-sm font-semibold text-white">CS</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Claude Shannon</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">11:49</span></span>
+          <span class="block truncate text-sm">A mathematical theory</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">The fundamental problem of communication is reproducing at one point a message selected at another.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-red text-sm font-semibold text-white">MH</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Margaret Hamilton</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">11:56</span></span>
+          <span class="block truncate text-sm">Priority displays</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">There was no choice but to be pioneers.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-blue text-sm font-semibold text-white">DE</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Douglas Engelbart</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">12:03</span></span>
+          <span class="block truncate text-sm">The demo</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">The mouse, hypertext and video conferencing, in ninety minutes.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-euclid-green text-sm font-semibold text-white">SK</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Susan Kare</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">12:10</span></span>
+          <span class="block truncate text-sm">Icons</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">A good icon is like a road sign.</span>
+        </span>
+      </li>
+      <li class="border-b border-black/10 dark:border-white/10 px-safe-4 py-3 flex gap-3">
+        <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-byrne-yellow text-sm font-semibold text-white">HL</span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-baseline justify-between gap-2"><span class="truncate font-semibold">Hedy Lamarr</span><span class="shrink-0 text-xs text-black/50 dark:text-white/50">12:17</span></span>
+          <span class="block truncate text-sm">Frequency hopping</span>
+          <span class="block line-clamp-2 text-sm text-black/60 dark:text-white/60">A radio guidance system that hops between frequencies so it cannot be jammed.</span>
+        </span>
+      </li>
+  </ul>
+  <p class="px-safe-4 py-8 text-center text-sm text-black/50 dark:text-white/50">The highlighted row and every divider run under the strip; names and times stop clear of it.</p>
+</main>
+<header class="absolute inset-x-0 top-0 z-10 bg-byrne-blue/90 text-white backdrop-blur-md px-safe-4 pt-safe-3 pb-3">
+  <div class="flex items-center justify-between"><a href="index.html" class="inline-flex items-center gap-1 text-sm font-medium text-white/80"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Examples</a><a data-width-toggle class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ring-1 text-white/80 ring-white/40"></a></div>
+  <h1 class="mt-3 text-3xl font-semibold tracking-tight">Inbox</h1>
+  <p class="text-sm text-white/75">12 messages · header spans the window</p>
+</header>
+<nav class="strip-rail z-20" aria-label="Inbox actions">
+  <button class="strip-button" aria-label="Compose"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg></button>
+  <button class="strip-button" aria-label="Back to top" onclick="scroller.scrollTo({top: 0, behavior: 'smooth'})"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></button>
+</nav>
+<!-- Without a strip, the same actions float bottom right -->
+<nav class="hidden no-strip:flex absolute right-safe-4 bottom-safe-6 z-20 flex-col gap-3" aria-label="Inbox actions">
+  <button class="rail-button" aria-label="Compose"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg></button>
+  <button class="rail-button" aria-label="Back to top" onclick="scroller.scrollTo({top: 0, behavior: 'smooth'})"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></button>
+</nav>
+<script src="toggle.js"></script>
+</body>
+</html>

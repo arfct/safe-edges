@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" class="relative bg-paper text-ink dark:bg-zinc-950 dark:text-zinc-100">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Gallery · Duo true width</title>
+<script>
+  // ?narrow leaves the page beside Safari's control strip, for comparison
+  window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };
+</script>
+<script src="../safe-edges.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="font-sans antialiased">
+<header class="px-safe-4 pt-safe-4 pb-3">
+  <div class="flex items-center justify-between"><a href="index.html" class="inline-flex items-center gap-1 text-sm font-medium text-byrne-blue dark:text-sky-300"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Examples</a><a data-width-toggle class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ring-1 text-byrne-blue ring-byrne-blue/30 dark:text-sky-300 dark:ring-sky-300/30"></a></div>
+  <h1 class="mt-3 text-3xl font-semibold tracking-tight">Gallery</h1>
+  <p id="cols" class="text-sm text-black/60 dark:text-white/60"></p>
+</header>
+<!-- Media queries see the layout width (382). A container on w-true sees the window. -->
+<div id="frame" class="@container w-true">
+  <div id="grid" class="grid grid-cols-3 gap-0.5 @[440px]:grid-cols-4 @[600px]:grid-cols-5"><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 0),oklch(0.45 0.12 40))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 37),oklch(0.45 0.12 77))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 74),oklch(0.45 0.12 114))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 111),oklch(0.45 0.12 151))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 148),oklch(0.45 0.12 188))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 185),oklch(0.45 0.12 225))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 222),oklch(0.45 0.12 262))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 259),oklch(0.45 0.12 299))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 296),oklch(0.45 0.12 336))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 333),oklch(0.45 0.12 13))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 10),oklch(0.45 0.12 50))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 47),oklch(0.45 0.12 87))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 84),oklch(0.45 0.12 124))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 121),oklch(0.45 0.12 161))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 158),oklch(0.45 0.12 198))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 195),oklch(0.45 0.12 235))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 232),oklch(0.45 0.12 272))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 269),oklch(0.45 0.12 309))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 306),oklch(0.45 0.12 346))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 343),oklch(0.45 0.12 23))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 20),oklch(0.45 0.12 60))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 57),oklch(0.45 0.12 97))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 94),oklch(0.45 0.12 134))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 131),oklch(0.45 0.12 171))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 168),oklch(0.45 0.12 208))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 205),oklch(0.45 0.12 245))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 242),oklch(0.45 0.12 282))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 279),oklch(0.45 0.12 319))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 316),oklch(0.45 0.12 356))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 353),oklch(0.45 0.12 33))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 30),oklch(0.45 0.12 70))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 67),oklch(0.45 0.12 107))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 104),oklch(0.45 0.12 144))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 141),oklch(0.45 0.12 181))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 178),oklch(0.45 0.12 218))"></div><div class="aspect-square" style="background:linear-gradient(135deg,oklch(0.72 0.14 215),oklch(0.45 0.12 255))"></div></div>
+</div>
+<footer class="px-safe-4 py-6 pb-safe-12 text-sm text-black/60 dark:text-white/60">The grid is <span class="font-mono text-xs">@container w-true</span> with <span class="font-mono text-xs">@[440px]:grid-cols-4</span>. With the strip the container is 466 wide and gets four columns; narrow, it’s 382 and gets three.</footer>
+<script>
+new ResizeObserver(() => {
+  const n = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+  cols.textContent = `${n} columns across ${frame.offsetWidth}px`;
+}).observe(frame);
+</script>
+<script src="toggle.js"></script>
+</body>
+</html>

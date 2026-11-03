@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" class="h-full overflow-hidden bg-black text-white">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Photos · Duo true width</title>
+<script>window.SafeEdges = { enabled: !new URLSearchParams(location.search).has('narrow') };</script>
+<script src="../safe-edges.js"></script>
+<script src="kit.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<!--
+  Photos: full bleed. Content owns the whole window, Safari's strip and toolbar float over it.
+  - The grid is sized by a container query on w-true, the window's width, so the strip
+    adds a column instead of a margin.
+  - Tiles under the strip are tappable: data-strip-tap lets safe-edges.js route the touch.
+  - The viewer covers the window, toolbar included (under-toolbar).
+  - The strip slot zooms the grid, or steps through photos in the viewer.
+-->
+<body class="relative h-full font-sans antialiased">
+<div id="app" class="absolute inset-0"></div>
+<nav id="rail" class="strip-rail z-30" aria-label="Actions"></nav>
+<script>
+const photos = Array.from({ length: 60 }, (_, i) => ({ seed: 101 + i * 17, day: 1 + Math.floor(i / 7) }));
+let columns = Number(sessionStorage.getItem('photos-columns') || 0); // 0: from the container width
+
+function zoom(step) {
+  const current = columns || (document.getElementById('frame').offsetWidth >= 440 ? 4 : 3);
+  columns = Math.min(7, Math.max(2, current + step));
+  sessionStorage.setItem('photos-columns', columns);
+  render();
+}
+
+function grid() {
+  rail.innerHTML = `
+    <button class="strip-button" data-icon="plus" aria-label="Larger photos" onclick="zoom(-1)"></button>
+    <button class="strip-button" data-icon="minus" aria-label="Smaller photos" onclick="zoom(1)"></button>`;
+  const cols = columns ? `grid-template-columns: repeat(${columns}, minmax(0, 1fr))` : '';
+  return `
+    <main id="scroller" class="absolute inset-x-0 top-0 under-toolbar overflow-y-auto overscroll-contain pb-toolbar">
+      <div class="h-[calc(env(safe-area-inset-top)+6.5rem)]"></div>
+      <div id="frame" class="@container w-true">
+        <div class="grid grid-cols-3 gap-px @[440px]:grid-cols-4 @[600px]:grid-cols-5" style="${cols}">
+          ${photos.map((p, i) => `<a href="#photo-${i}" data-strip-tap class="aspect-square bg-cover bg-center" style="background-image:${art(p.seed, { width: 200, height: 200 })}" aria-label="Photo ${i + 1}"></a>`).join('')}
+        </div>
+      </div>
+      <p class="px-safe-4 py-6 text-center text-sm text-white/50"><span id="count"></span> · tiles under the strip open too</p>
+    </main>
+    <header class="absolute inset-x-0 top-0 z-10 bg-linear-to-b from-black/85 via-black/60 to-transparent px-safe-4 pt-safe-3 pb-6">
+      <div class="flex items-center justify-between">${examplesLink('text-white/80')}${widthToggle('text-white/80 ring-white/40')}</div>
+      <div class="mt-2 flex items-end justify-between">
+        <h1 class="text-3xl font-bold tracking-tight">Library</h1>
+        <span class="text-sm text-white/60">${photos.length} photos</span>
+      </div>
+    </header>`;
+}
+
+function viewer(index) {
+  rail.innerHTML = `
+    <button class="strip-button" data-icon="up" aria-label="Previous photo" onclick="location.replace('#photo-${(index + photos.length - 1) % photos.length}')"></button>
+    <button class="strip-button" data-icon="down" aria-label="Next photo" onclick="location.replace('#photo-${(index + 1) % photos.length}')"></button>`;
+  const p = photos[index];
+  return `
+    <section class="absolute inset-x-0 top-0 under-toolbar bg-black">
+      <div class="absolute inset-0 bg-cover bg-center" style="background-image:${art(p.seed, { width: 466, height: 678 })}"></div>
+      <div class="absolute inset-x-0 top-0 flex items-center justify-between bg-linear-to-b from-black/70 to-transparent px-safe-4 pt-safe-3 pb-8">
+        <a href="#" class="inline-flex items-center gap-1 font-medium">${icon('back')}Library</a>
+        <span class="text-sm text-white/80">October ${p.day} · ${index + 1} of ${photos.length}</span>
+      </div>
+      <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/75 to-transparent px-safe-4 pt-10 pb-toolbar-3">
+        <p class="text-sm text-white/85">The photo fills the whole window, under Safari’s strip and its address bar. The caption stays clear of both.</p>
+      </div>
+    </section>`;
+}
+
+function render() {
+  const match = location.hash.match(/^#photo-(\d+)$/);
+  const scroller = document.getElementById('scroller');
+  if (scroller) render.scrollTop = scroller.scrollTop;
+  app.innerHTML = match ? viewer(Number(match[1]) % photos.length) : grid();
+  const next = document.getElementById('scroller');
+  if (next) {
+    next.scrollTop = render.scrollTop || 0;
+    const frame = document.getElementById('frame');
+    const n = getComputedStyle(frame.firstElementChild).gridTemplateColumns.split(' ').length;
+    document.getElementById('count').textContent = `${n} columns across ${frame.offsetWidth}px`;
+  }
+}
+addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>

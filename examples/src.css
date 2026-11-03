@@ -1,0 +1,33 @@
+@import "tailwindcss";
+@import "../tailwind/safe-edges.css";
+
+/* Euclid palette (arfct/quantum) */
+@theme {
+  --color-byrne-red: oklch(0.574 0.2096 29.02);
+  --color-byrne-yellow: oklch(0.8395 0.1622 85.99);
+  --color-byrne-blue: oklch(0.4532 0.0961 238.25);
+  --color-euclid-green: oklch(0.6118 0.1917 143.96);
+  --color-ink: oklch(0.2 0.01 250);
+  --color-paper: oklch(0.985 0.004 85);
+  --font-sans: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "New York", ui-serif, Georgia, serif;
+}
+
+/* A control in the strip slot, sized and styled like Safari's own buttons */
+@utility rail-button {
+  display: grid;
+  place-items: center;
+  width: calc(var(--spacing) * 12);
+  height: calc(var(--spacing) * 12);
+  border-radius: 9999px;
+  background: color-mix(in oklab, white 72%, transparent);
+  backdrop-filter: blur(12px) saturate(1.6);
+  -webkit-backdrop-filter: blur(12px) saturate(1.6);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12), inset 0 0 0 1px rgb(255 255 255 / 0.5);
+  color: var(--color-byrne-blue);
+  @media (prefers-color-scheme: dark) {
+    background: color-mix(in oklab, black 55%, transparent);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.4), inset 0 0 0 1px rgb(255 255 255 / 0.12);
+    color: white;
+  }
+}
