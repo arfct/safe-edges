@@ -1,6 +1,7 @@
 ---
 title: safe-edges
 date: 2026-11
+status: released
 category: tool
 tags: [web]
 url: https://arfct.github.io/safe-edges/
@@ -16,7 +17,7 @@ media:
   - src: reader.png
     caption: The Ratio example, a scrolling article whose own two buttons sit in the slot between Safari's
     alt: A phone screen with a magazine page titled Ratio, a pink and green landscape illustration that runs under Safari's buttons on the right, and two white round buttons above Safari's lower pair
-unconfirmed: [date]
+unconfirmed: [date, status]
 ---
 
 An 84-point strip of Safari's own controls runs beside every page on the outer display of an iPhone Duo and in Split View, while the safe-area inset Safari reports is 0 on every edge. The safe-edges library measures the strip and the bottom toolbar as the difference between the window's outer and inner sizes, widens the page to the whole window, and publishes as CSS custom properties the insets that Safari should have reported. In the first image the same photo grid is shown before and after, and the widened one has room for a fourth column. A set of Tailwind v4 utilities covers the same values.
