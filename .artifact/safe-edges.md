@@ -1,6 +1,6 @@
 ---
 title: safe-edges
-date: 2026-10
+date: 2026-11
 category: tool
 tags: [web]
 url: https://arfct.github.io/safe-edges/
